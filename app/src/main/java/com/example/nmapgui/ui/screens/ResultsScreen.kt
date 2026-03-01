@@ -34,7 +34,6 @@ fun ResultsScreen(vm: NmapViewModel) {
     var selectedTab by remember { mutableStateOf(ResultTab.PARSED) }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // Tab bar
         TabRow(selectedTabIndex = selectedTab.ordinal) {
             Tab(
                 selected = selectedTab == ResultTab.PARSED,
@@ -79,7 +78,6 @@ private fun ParsedResultsPane(result: ScanResult?, isScanning: Boolean) {
         contentPadding = PaddingValues(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        // Stats bar
         item {
             Surface(
                 color = MaterialTheme.colorScheme.primaryContainer,
@@ -87,18 +85,9 @@ private fun ParsedResultsPane(result: ScanResult?, isScanning: Boolean) {
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Column(modifier = Modifier.padding(12.dp)) {
-                    Text(
-                        "Scan Complete",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold,
-                    )
-                    if (result.scanStats.isNotBlank()) {
-                        Text(result.scanStats, style = MaterialTheme.typography.bodySmall)
-                    }
-                    if (result.startTime.isNotBlank()) {
-                        Text("Started: ${result.startTime}", style = MaterialTheme.typography.bodySmall)
-                    }
+                    Text("Scan Complete", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                    if (result.scanStats.isNotBlank()) Text(result.scanStats, style = MaterialTheme.typography.bodySmall)
+                    if (result.startTime.isNotBlank()) Text("Started: ${result.startTime}", style = MaterialTheme.typography.bodySmall)
                     Text("Hosts found: ${result.hosts.size}", style = MaterialTheme.typography.bodySmall)
                 }
             }
@@ -119,8 +108,9 @@ private fun ParsedResultsPane(result: ScanResult?, isScanning: Boolean) {
     }
 }
 
+// Internal so HistoryScreen can reference it
 @Composable
-private fun HostCard(host: HostResult) {
+internal fun HostCard(host: HostResult) {
     var expanded by remember { mutableStateOf(true) }
 
     Surface(
@@ -129,7 +119,6 @@ private fun HostCard(host: HostResult) {
         modifier = Modifier.fillMaxWidth(),
     ) {
         Column {
-            // Host header
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -159,17 +148,13 @@ private fun HostCard(host: HostResult) {
                     }
                 }
                 IconButton(onClick = { expanded = !expanded }) {
-                    Icon(
-                        if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                        contentDescription = null,
-                    )
+                    Icon(if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore, contentDescription = null)
                 }
             }
 
             if (expanded) {
                 HorizontalDivider()
 
-                // OS matches
                 if (host.osMatches.isNotEmpty()) {
                     Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
                         Text("OS Detection", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
@@ -183,7 +168,6 @@ private fun HostCard(host: HostResult) {
                     HorizontalDivider()
                 }
 
-                // Ports table
                 if (host.ports.isNotEmpty()) {
                     PortsTable(host.ports)
                 } else {
@@ -202,7 +186,6 @@ private fun HostCard(host: HostResult) {
 @Composable
 private fun PortsTable(ports: List<PortResult>) {
     Column(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)) {
-        // Header row
         Row(modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surface)
@@ -222,11 +205,9 @@ private fun PortsTable(ports: List<PortResult>) {
                 else -> MaterialTheme.colorScheme.onSurface
             }
             Column {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp, vertical = 3.dp),
-                ) {
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 3.dp)) {
                     TableCell(port.portId, weight = 0.18f, color = MaterialTheme.colorScheme.primary)
                     TableCell(port.protocol, weight = 0.12f)
                     TableCell(port.state, weight = 0.15f, color = stateColor)
@@ -235,7 +216,6 @@ private fun PortsTable(ports: List<PortResult>) {
                         .filter { it.isNotBlank() }.joinToString(" ")
                     TableCell(versionStr, weight = 0.30f, muted = true)
                 }
-                // Show reason if present
                 if (port.reason.isNotBlank()) {
                     Text(
                         "  reason: ${port.reason}",
@@ -245,7 +225,6 @@ private fun PortsTable(ports: List<PortResult>) {
                         fontSize = 10.sp,
                     )
                 }
-                // Scripts
                 port.scripts.forEach { script ->
                     Surface(
                         modifier = Modifier
@@ -310,13 +289,11 @@ private fun RawOutputPane(lines: List<String>, isScanning: Boolean) {
     val clipboard = LocalClipboardManager.current
     val fullText = remember(lines) { lines.joinToString("\n") }
 
-    // Auto-scroll to bottom
     LaunchedEffect(lines.size) {
         scrollState.animateScrollTo(scrollState.maxValue)
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // Toolbar
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -339,7 +316,6 @@ private fun RawOutputPane(lines: List<String>, isScanning: Boolean) {
             }
         }
         HorizontalDivider()
-        // Output
         Column(
             modifier = Modifier
                 .fillMaxSize()

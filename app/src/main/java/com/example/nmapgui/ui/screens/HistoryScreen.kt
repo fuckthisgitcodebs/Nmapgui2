@@ -3,7 +3,9 @@ package com.example.nmapgui.ui.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -41,7 +43,6 @@ fun HistoryScreen(vm: NmapViewModel) {
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // Header
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -120,12 +121,7 @@ private fun HistoryEntryCard(
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(
-                Icons.Default.NetworkPing,
-                contentDescription = null,
-                tint = Green400,
-                modifier = Modifier.size(28.dp),
-            )
+            Icon(Icons.Default.NetworkPing, contentDescription = null, tint = Green400, modifier = Modifier.size(28.dp))
             Spacer(Modifier.width(10.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(entry.target, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
@@ -156,7 +152,6 @@ private fun HistoryDetailView(
     var showRaw by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // Toolbar
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -175,7 +170,6 @@ private fun HistoryDetailView(
             }
         }
 
-        // Command used
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
@@ -199,11 +193,18 @@ private fun HistoryDetailView(
 
         if (showRaw) {
             val scroll = rememberScrollState()
-            Column(modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(scroll)
-                .padding(8.dp)) {
-                Text(entry.rawOutput, style = MaterialTheme.typography.bodySmall, fontFamily = FontFamily.Monospace, fontSize = 11.sp)
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(scroll)
+                    .padding(8.dp),
+            ) {
+                Text(
+                    entry.rawOutput,
+                    style = MaterialTheme.typography.bodySmall,
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 11.sp,
+                )
             }
         } else {
             val result = entry.scanResult
